@@ -3,7 +3,6 @@ package peaksoft.dao;
 import peaksoft.model.User;
 import peaksoft.util.Util;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,45 +23,44 @@ public class UserDaoJdbcImpl implements UserDao {
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
+            System.out.println("Success");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
     }
 
     public void dropUsersTable() {
         try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate("drop table users = ?");
+            statement.executeUpdate("drop table users");
+            System.out.println("Success");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        User user = new User();
         String sql = """
-                insert into users(name, last_name, age)
-                values(?,?,?)""";
+                insert into users (name, last_name, age)
+                values (?, ?, ?)
+                """;
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getLastName());
-            preparedStatement.setByte(3, user.getAge());
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setInt(3, age);
             preparedStatement.executeUpdate();
             System.out.println("Success");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
-
     }
 
     public void removeUserById(long id) {
         String sql = """
-                delete * from users where id = ? """;
+                delete from users where id = ? """;
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
-            int number = preparedStatement.executeUpdate();
-            if (number > 0) {
-                System.out.println("Successfully removed: ");
-            } else System.out.println("User by: " + id + " not found");
+            preparedStatement.executeUpdate();
+            System.out.println("Successfully removed: ");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -86,19 +84,19 @@ public class UserDaoJdbcImpl implements UserDao {
             }
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         return users;
     }
 
     public void cleanUsersTable() {
         String sql = """
-                truncate table * from users = ? """;
+                truncate table users""";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
             System.out.println("Successfully cleaned");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
     }
 }

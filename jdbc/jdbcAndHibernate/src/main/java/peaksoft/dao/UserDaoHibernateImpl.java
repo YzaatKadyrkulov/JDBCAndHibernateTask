@@ -67,9 +67,8 @@ public class UserDaoHibernateImpl implements UserDao {
         try {
             assert entityManagerFactory != null;
             try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
-                entityManager.getTransaction().commit();
-                entityManager.createNativeQuery("select  u from User u")
-                        .executeUpdate();
+                entityManager.getTransaction().begin();
+                users = entityManager.createQuery("select  u from User u", User.class).getResultList();
                 entityManager.getTransaction().commit();
             }
         } catch (HibernateException e) {
@@ -84,8 +83,8 @@ public class UserDaoHibernateImpl implements UserDao {
         try {
             assert entityManagerFactory != null;
             try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
-                entityManager.getTransaction().commit();
-                entityManager.createNativeQuery("truncate table User")
+                entityManager.getTransaction().begin();
+                entityManager.createNativeQuery("truncate table users")
                         .executeUpdate();
                 entityManager.getTransaction().commit();
                 System.out.println("Successfully cleaned");
